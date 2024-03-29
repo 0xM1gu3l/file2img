@@ -5,30 +5,29 @@
 # 4. For information retrieve we should pass the length of the binary + the video.
 
 from PIL import Image as img
-from get_bytes_from_file import getBytesFromFile
+from util.get_bytes_from_file import getBytesFromFile
 
 i = 0
 h = 0
 nf = 0
+n = 0
 by = getBytesFromFile()
-abl = len(by.replace(" ", ""))
-print(abl)
-print(by.split(" "))
+abl = len(by)
 
 frame = img.new("RGBA", (3840, 2160), None)
 
-for binary in by.split(" "):
+for binary in by:
     bl = len(binary)
-    print(bl)
     # print(binary)
     for bit in binary:
+        n += 1
         # print(binary)
         bit = int(bit)
         # print(bit)
         if (i == frame.width):
-            # print(f"{i} | {h}")
             if (i == frame.width and h == frame.height - 1 ):
                 frame.save(f"./out/frame000{nf}.png", "png")
+                frame = img.new("RGBA", (3840, 2160), None)
                 nf += 1
                 i = 0
                 h = 0
@@ -44,4 +43,19 @@ for binary in by.split(" "):
             # print("O bit é 1")
             frame.putpixel((i, h), (255, 255, 255, 255))
         i += 1
+    if (n == abl):
+        print("skipping add separator...")
+    else:
+        if (i == frame.width):
+            i = 0
+            h += 1
+        print(f"{i} | {h}")
+        frame.putpixel((i, h), (155, 155, 155, 255))
+        i += 1
+# exif = frame.getexif()
+# exif.update((271, "Hello World"))
+# print(exif.get_ifd(271))
+
 frame.save(f"./out/frame000{nf}.png", "png")
+print(f"File output at: ./out/frame000{nf}.png")
+print(f"Encoding of the original file: {list(by)[1]}")
